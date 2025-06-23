@@ -1,4 +1,6 @@
 package com.gab.apibank_system.domain.response;
 
-public record UserResponse() {
+import java.util.UUID;
+
+public record UserResponse (UUID id, String firstName, String lastName, String email, String cellphone){
 }
