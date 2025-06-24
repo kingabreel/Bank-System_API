@@ -7,6 +7,7 @@ import com.gab.apibank_system.domain.response.Response;
 import com.gab.apibank_system.domain.response.UserResponse;
 import com.gab.apibank_system.infra.security.TokenService;
 import com.gab.apibank_system.repository.UserRepository;
+import com.gab.apibank_system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,19 +31,28 @@ public class AccountController implements Serializable {
     private final UserRepository repository;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final UserService userService;
 
     @Autowired
-    public AccountController(UserRepository repository, AuthenticationManager authenticationManager, TokenService tokenService) {
+    public AccountController(UserRepository repository, AuthenticationManager authenticationManager, TokenService tokenService, UserService userService) {
         this.repository = repository;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+        this.userService = userService;
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> getTest() {
+        return ResponseEntity.status(HttpStatus.OK).body(repository.findAll());
     }
 
     @PostMapping("/register")
     public ResponseEntity<Response<UserResponse>> createAccount(@RequestBody UserRequest data) {
         Response<UserResponse> finalResponse = new Response<>();
         try {
-            if (this.repository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
+            if (this.repository.findByEmail(data.email()) != null) {
+                return ResponseEntity.badRequest().build();
+            }
 
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
 
@@ -50,7 +60,7 @@ public class AccountController implements Serializable {
 
             this.repository.save(user);
 
-            UserResponse userRes = new UserResponse(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getCellphone());
+            UserResponse userRes = userService.configUser(user);
 
             finalResponse.setSuccess(userRes, "Account created successfully", HttpStatus.CREATED.toString());
 

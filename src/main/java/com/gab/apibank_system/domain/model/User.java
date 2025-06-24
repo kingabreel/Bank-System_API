@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @Table(name = "users")
 @Entity(name = "users")
 @Getter
@@ -31,7 +32,17 @@ public class User implements UserDetails {
     private String email;
     private String password;
     private String cellphone;
-    private UserRole role;
+
+    @Builder.Default
+    private UserRole role = UserRole.USER;
+
+    @OneToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
