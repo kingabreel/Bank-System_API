@@ -1,6 +1,7 @@
 package com.gab.apibank_system.infra.security;
 
 import com.gab.apibank_system.repository.UserRepository;
+import com.gab.apibank_system.service.AuthorizationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,18 +19,24 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     private TokenService tokenService;
+
     @Autowired
-    private UserRepository userRepository;
+    private AuthorizationService authorizationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
         if(token != null){
             var login = tokenService.validateToken(token);
-            UserDetails user = userRepository.findByEmail(login);
 
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (login != null) {
+                UserDetails user = authorizationService.loadUserByUsername(login);
+                if (user != null) {
+                    var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+            }
+
         }
         filterChain.doFilter(request, response);
     }

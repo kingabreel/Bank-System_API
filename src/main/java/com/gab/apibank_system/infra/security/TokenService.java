@@ -41,12 +41,13 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception){
-            return "";
+            System.out.print(exception.getMessage());
+            return null;
         }
     }
 
     private Instant genExpirationDate(){
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        return LocalDateTime.now().plusDays(2).toInstant(ZoneOffset.UTC);
     }
 
 }
