@@ -1,5 +1,6 @@
 package com.gab.apibank_system.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class Agency {
     private String number;
 
     @OneToMany(mappedBy = "agency", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Account> accounts;
 
     @OneToOne

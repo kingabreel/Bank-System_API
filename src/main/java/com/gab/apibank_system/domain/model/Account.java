@@ -1,5 +1,7 @@
 package com.gab.apibank_system.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,10 +23,12 @@ public class Account {
 
     @OneToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agency_id")
+    @JsonBackReference
     private Agency agency;
 
     @OneToOne
