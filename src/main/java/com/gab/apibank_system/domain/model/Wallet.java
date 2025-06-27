@@ -43,7 +43,7 @@ public class Wallet {
 
         if (card != null) {
             if (card.getCardType() == Card.CardType.CREDIT_CARD) {
-                return card.getLimit();
+                return card.getCard_limit();
             } else {
                 return this.getBalance();
             }

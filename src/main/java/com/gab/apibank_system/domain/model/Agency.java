@@ -18,6 +18,9 @@ public class Agency {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Version
+    private Long version;
+
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id")
     private List<Employee> employees;*/

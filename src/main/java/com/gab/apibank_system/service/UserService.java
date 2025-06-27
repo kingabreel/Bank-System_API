@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -40,61 +41,63 @@ public class UserService {
         this.agencyRepository = agencyRepository;
     }
 
-    public UserResponse configUser(User user) {
-        WalletDTO walletDTO = createWallet();
+    @Transactional
+    public UserResponse registerUser(UserRequest data, String encryptedPassword) {
+        User user = User.fromDto(data, encryptedPassword);
+        user = userRepository.save(user);
 
-        Account account = createAccount(user, walletDTO);
+        Wallet wallet = createWallet();
+        Account account = createAccount(user, wallet);
 
         user.setAccount(account);
+        user = userRepository.save(user);
 
-        return ConversionService.userResponseFromEntity(userRepository.save(user));
+        return ConversionService.userResponseFromEntity(user);
     }
 
-    private WalletDTO createWallet() {
+    private Wallet createWallet() {
         Wallet wallet = new Wallet();
 
         wallet.setCards(new ArrayList<>());
         wallet.setBalance(BigDecimal.ZERO);
 
-        return ConversionService.walletDTOFromEntity(walletRepository.save(wallet));
+        return walletRepository.save(wallet);
     }
 
-    private Account createAccount(User user, WalletDTO walletDTO) {
-        AgencyDTO agency;
-        if (MOCK_AGENCY_ID == null) {
-            agency = saveMockAgency();
-        } else {
-            agency = mockAgency();
-        }
+    private Account createAccount(User user, Wallet wallet) {
+        Agency agency = saveMockAgency();
 
-        AccountDTO accountDTO = new AccountDTO(UUID.randomUUID(), ConversionService.userDTOFromEntity(user), agency, walletDTO);
+        AccountDTO accountDTO = new AccountDTO(UUID.randomUUID(), null, null, null);
 
         Account account = ConversionService.accountFromDTO(accountDTO);
+        account.setOwner(user);
+        account.setWallet(wallet);
+        account.setAgency(agency);
 
         return accountRepository.save(account);
     }
 
-    private AgencyDTO saveMockAgency() {
+    private Agency saveMockAgency() {
         if (MOCK_AGENCY_ID == null) {
             MOCK_AGENCY_ID = UUID.randomUUID();
         }
 
-        Agency existingAgency = agencyRepository.findById(MOCK_AGENCY_ID).orElse(null);
+        Optional<Agency> optionalAgency = agencyRepository.findById(MOCK_AGENCY_ID);
 
-        Agency agency;
-
-        if (existingAgency == null) {
-            agency = ConversionService.agencyFromDTO(mockAgency());
-        } else {
-            agency = existingAgency;
+        if (optionalAgency.isPresent()) {
+            return optionalAgency.get();
         }
 
-        Agency savedAgency = agencyRepository.save(agency);
+        Agency agency = ConversionService.agencyFromDTO(mockAgency());
 
-        return ConversionService.agencyDTOFromEntity(savedAgency);
+        agency.setAccounts(new ArrayList<>());
+        Agency savedAgency = agencyRepository.save(agency);
+        MOCK_AGENCY_ID = savedAgency.getId();
+
+        return savedAgency;
     }
 
     private AgencyDTO mockAgency() {
-        return new AgencyDTO(MOCK_AGENCY_ID, "MockAgency", "email@mail.com", "829999", null);
+        return new AgencyDTO(null, "MockAgency", "email@mail.com", "829999", null);
     }
 }

@@ -23,7 +23,7 @@ public class Card {
     @Builder.Default
     private CardType cardType = CardType.DEBIT_CARD;
 
-    private BigDecimal limit;
+    private BigDecimal card_limit;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_id")

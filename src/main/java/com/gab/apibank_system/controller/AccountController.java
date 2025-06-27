@@ -56,11 +56,7 @@ public class AccountController implements Serializable {
 
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
 
-            User user = User.fromDto(data, encryptedPassword);
-
-            this.repository.save(user);
-
-            UserResponse userRes = userService.configUser(user);
+            UserResponse userRes = userService.registerUser(data, encryptedPassword);
 
             finalResponse.setSuccess(userRes, "Account created successfully", HttpStatus.CREATED.toString());
 

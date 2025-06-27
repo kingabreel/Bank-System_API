@@ -66,16 +66,19 @@ public class ConversionService {
     protected static Account accountFromDTO(AccountDTO accountDTO) {
         Account account = new Account();
 
-        account.setOwner(userFromDTO(accountDTO.owner()));
         account.setAccountNumber(UUID.randomUUID().toString());
 
-        Agency agency = agencyFromDTO(accountDTO.agency());
+        if (accountDTO.owner() != null) {
+            account.setOwner(userFromDTO(accountDTO.owner()));
+        }
 
-        account.setAgency(agency);
+        if (accountDTO.agency() != null) {
+            account.setAgency(agencyFromDTO(accountDTO.agency()));
+        }
 
-        Wallet wallet = walletFromDTO(accountDTO.wallet());
-
-        account.setWallet(wallet);
+        if (accountDTO.wallet() != null) {
+            account.setWallet(walletFromDTO(accountDTO.wallet()));
+        }
 
         return account;
     }
