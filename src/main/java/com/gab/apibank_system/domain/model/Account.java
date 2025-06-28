@@ -36,4 +36,8 @@ public class Account {
     @JsonBackReference
     private Wallet wallet;
 
+    @OneToOne
+    @JoinColumn(name = "pix_id")
+    @JsonBackReference
+    private Pix pix;
 }

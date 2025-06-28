@@ -36,8 +36,12 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/v1/account").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/account/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/transaction/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/v1/transaction/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/v1/card/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/card/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v1/pix/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/v1/pix/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

@@ -25,6 +25,22 @@ public class Wallet {
     @JsonManagedReference
     private List<Card> cards;
 
+    public void addMoney(double money){
+        double newValue = balance.doubleValue() + money;
+
+        this.setBalance(BigDecimal.valueOf(newValue));
+    }
+
+    public void removeMoney(double money){
+        double newValue = balance.doubleValue() - money;
+
+        if (newValue < 0){
+            throw new RuntimeException("You don't have enough money");
+        }
+
+        this.setBalance(BigDecimal.valueOf(newValue));
+    }
+
     public void addCard(Card card) {
         if (this.cards == null) {
             this.cards = new ArrayList<>();
