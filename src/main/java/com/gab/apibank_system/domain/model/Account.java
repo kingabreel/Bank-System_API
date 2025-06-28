@@ -33,6 +33,7 @@ public class Account {
 
     @OneToOne
     @JoinColumn(name = "wallet_id")
+    @JsonBackReference
     private Wallet wallet;
 
 }

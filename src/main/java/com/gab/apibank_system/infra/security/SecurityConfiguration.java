@@ -35,10 +35,9 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/v1/account").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/account").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/account/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/account/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v1/transaction").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v1/account/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/v1/transaction/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/v1/card/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

@@ -94,7 +94,7 @@ public class TransactionService {
         return new TransactionResponse(account.getAccountNumber(), account.getAgency().getNumber(), wallet.getBalance().doubleValue());
     }
 
-    private User getCurrentUser() {
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
